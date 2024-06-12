@@ -1,0 +1,42 @@
+site_name: backprop
+
+nav:
+  - Home: 'index.md'
+  - Notes: 'notes/notes_index.md'
+  - ML-notes: 'mlNotes/mlNotes_index.md'
+  - About: 'about.md'
+
+theme:
+
+  name: material
+
+  markdown-extensions:
+    - toc:
+        permalink: true
+        title: On this Page
+
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigatoion.expand
+    - toc.follow
+    # - navigation.top
+
+  palette:
+
+  # palette toggle for dark  mode
+  - scheme: slate
+    primary: black
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+
+  #palette toggle for light mode
+  - scheme: default
+    primary: white
+    toggle:  
+      icon: material/brightness-7
+      name: Switch to dark mode
