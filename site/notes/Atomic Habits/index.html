@@ -1,0 +1,750 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.11">
+    
+    
+      
+        <title>Atomic Habits - backprop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#structural-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="backprop" class="md-header__button md-logo" aria-label="backprop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            backprop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Atomic Habits
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../notes_index/" class="md-tabs__link">
+        
+  
+    
+  
+  Notes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../mlNotes/mlNotes_index/" class="md-tabs__link">
+        
+  
+    
+  
+  ML-notes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="backprop" class="md-nav__button md-logo" aria-label="backprop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    backprop
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notes_index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mlNotes/mlNotes_index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML-notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#structural-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Structural Notes:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-the-fundamentalswhy-tiny-changes-make-a-big-difference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Part-1: The Fundamentals(why Tiny changes make a big difference)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part-1: The Fundamentals(why Tiny changes make a big difference)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chapter-1-the-surprising-power-of-atomic-habits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chapter-1: The Surprising Power of Atomic Habits.
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chapter-1: The Surprising Power of Atomic Habits.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trajectory-is-more-important-than-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trajectory is more important than results:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-progress-looks-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      What progress looks like?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#focus-on-systems-instead-of-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Focus on Systems instead of Goals
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-system-of-atomic-habits" class="md-nav__link">
+    <span class="md-ellipsis">
+      A System of Atomic Habits
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-2-identity-based-habits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chapter-2: Identity Based Habits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chapter-2: Identity Based Habits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-other-edge-of-identity-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Other edge of Identity Change
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-step-process-to-changing-your-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Two-step process to changing your identity.
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-epilogue" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chapter Epilogue
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chapter-3-how-to-build-better-habits-in-4-simple-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chapter-3: How to build Better Habits in 4 simple steps
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Atomic Habits</h1>
+
+<p><strong>Date: 2023-09-29</strong></p>
+<h2 id="structural-notes">Structural Notes:</h2>
+<ol>
+<li><strong>What kind of book is this?</strong></li>
+<li><strong>What is it about as a whole?</strong>
+<strong>Key themes of the book:</strong></li>
+<li>One of the core themes of this book is to focus on systems instead of goals for progress and changing the habits.</li>
+<li>The goal is using habits as a means to change our <strong>Identity</strong> not to reach an outcome.</li>
+<li>Feedback loops.</li>
+<li><strong>Structure:</strong></li>
+<li>The book is divided in to 6 chapters. </li>
+<li>The first chapter <strong>The Fundamentals</strong> talks about why and how atomic habits are powerful.</li>
+<li>The next 4 Chapters deal with the <strong>Four Laws of behaviour change</strong>.<ol>
+<li>Make it Obvious</li>
+<li>Make it Attractive</li>
+<li>Make it Easy</li>
+<li>Make it Satisfying</li>
+</ol>
+</li>
+<li>The final chapter deals with fine-tuning of the habits and system that's been set.</li>
+</ol>
+<hr />
+<h2 id="part-1-the-fundamentalswhy-tiny-changes-make-a-big-difference">Part-1: The Fundamentals(why Tiny changes make a big difference)</h2>
+<h3 id="chapter-1-the-surprising-power-of-atomic-habits">Chapter-1: The Surprising Power of Atomic Habits.</h3>
+<p><strong>Aggregation of marginal gains:</strong> 
+The philosophy of searching for a tiny margin of improvement in everything we do.</p>
+<p>-&gt; Take everything about the thing that goes into doing the task or routine that you want to do and improve them by 1%.- <em>TODO</em></p>
+<blockquote>
+<p>If we get better everyday by 1% for one year, you'll end up 37% times better by the time you're done. Conversely, if we get worse each day by 1% for 1 year, we'll decline nearly down to zero.</p>
+</blockquote>
+<p>-&gt; Try with math - addition, subtraction and stuff. Measure if the performance is improved by 37%. We can measure it with respect to time and accuracy. <em>TODO</em></p>
+<p>The problem is <strong>small</strong> changes don't reap immediate results. The changes only become noticeable by months, a year, 2 years, 10 years. Only for a time frame like this the value of good habits and the cost of bad habits become strikingly apparent. </p>
+<p><strong>A single decision is easy to dismiss</strong>, It doesn't have any immediate fatal consequences. So, we do it. And we do it again and again. As we are inherently not wired to understand the exponential function(which includes the compound interest function), we do it. And the consequences come into the picture all at once. But when we repeat these <strong>1% errors</strong> day after day after everyday, by replicating poor decisions, duplicating tiny mistakes( [[The art of thinking clearly]] ), rationalising little excuses, our small choices compound into toxic results.</p>
+<p>-&gt; List down what you know that you are doing wrong, and are still doing as it doesn't have any significant effect on the immediate future or the present. And stop doing them. -<em>TODO</em>
+1. Gym
+2. Walking
+3. Eating in moderation
+4. Reading everyday and asking the 4 question from htrab.
+5. Bathing in the morning
+6. Applying oil regularly
+7. </p>
+<h4 id="trajectory-is-more-important-than-results"><strong>Trajectory is more important than results:</strong></h4>
+<p>If you want to predict where you'll end up in life, all you have to do is follow the curve of tiny gains or tiny losses. And see how your daily choices will compound ten or twenty years down the line. 
+![[Pasted image 20230929181351.jpg]]</p>
+<h4 id="what-progress-looks-like">What progress looks like?</h4>
+<p>Breakthrough moments are often the result of many previous accumulations, which build up the <strong>potential</strong> required to unleash a major change. Cancer spends 80% of it's life undetectable, then takes over the body in months(bad habits). Bamboo spends the first 5 years and builds it's extensive root system under the soil and shoots up to 90 feet into the air in the next 6 weeks.(Good habits)</p>
+<p>Habits are the same. They seem to make no difference until we cross a critical threshold and unlock a new level of performance. In the early and middle stages of any quest, there's a valley of disappointment.
+![[Pasted image 20230929182842.jpg]]
+The people who cross the valley of disappointment, unlock the real benefits of their atomic habits.</p>
+<p><strong>Question:</strong> What determines whether we stick with a habit long enough to survive the Plateau of latent Potential and break through to the other side? What is the that causes some people to slide into unwanted habits and enables others to enjoy the compounding effects of the good ones?
+<strong>Answer:</strong> Focus on Systems instead of Goals</p>
+<h4 id="focus-on-systems-instead-of-goals">Focus on Systems instead of Goals</h4>
+<p>We think that we need goals to achieve success in what we do. This is false in part. The case will be made below shortly.
+1. <strong>Winners and losers have the same goals</strong>: 
+   Every team that participate in a tournament have the same goal to win the world cup. But only one team does that. The winners and losers had the same goals, but only one succeeded. As they implemented a <em>system of small improvements.</em>
+   Goal setting suffers from a serious case of <em>survivorship bias</em>. We concentrate on the people who end up winning - the survivors- and mistakenly assume that ambitious goals led to their success while overlooking all of the  people who had the same objective but didn't succeed.
+2. <strong>Achieving a goal is only a momentary change(IMPORTANT):</strong> 
+   Imagine we have a messy room and we set our goal to clean it. We summon the energy to finally to do clean it, and we clean it(after many rounds of procrastination). We've cleaned the room - for now. If we maintain the same sloppy, pack-rat habits that led to a messy room in the first place, we'll soon end up with a new set of mess. And we'll be looking for another round of incredible energy to clean the room. We're chasing the same outcome. Despite achieving the goal, we're again and again chasing the same goal. This is recurrent because <strong><em>we've never changed the system.</em></strong> 
+   We've treated a symptom without addressing the cause.
+   We need to solve the problems at systems level-fix the inputs and the outputs will fix themselves.
+3. <strong>Goals restrict our idea of happiness:</strong>
+   Goals create an "either or" conflict: If we achieve our goal we tell ourselves that we are successful, if we don't we treat ourselves as an utter disappointment. 
+   When we adopt the <em>system-first</em> mentality we fall in love with the process rather than the outcome. We don't have to wait till the outcome is achieved to be happy. We can indeed be at peace while performing the task at hand.</p>
+<p><strong>A final note on systems and goals</strong></p>
+<blockquote>
+<p>Goals set the direction, Systems enable the motion in that direction.</p>
+</blockquote>
+<h4 id="a-system-of-atomic-habits">A System of Atomic Habits</h4>
+<p>You do not rise to the level of your goals, you fall to the level of your systems.</p>
+<p>Focusing on the overall system, rather than a single goals is one of the core themes of this book. </p>
+<p>Atomic Habits-small and mighty-regular practice or routine that is not only small and easy to do, but also the source of incredible power. </p>
+<p>They are small and when piled up on one another they come to fruition.</p>
+<p><strong>2023-10-06 | 01:05</strong>
+<em>Didn't read the book since 4 days. And I'm here making notes.</em></p>
+<h3 id="chapter-2-identity-based-habits">Chapter-2: Identity Based Habits</h3>
+<p><strong>Why is it easy to repeat bad habits and so hard to form the good ones?</strong>
+Changing habits can be challenging for two reasons:
+1. We try to change the wrong thing
+2. We try to change our habits in the wrong way.
+<strong>Three Layers of Behaviour Change:</strong>
+(Not to be confused with Four laws of behaviour change made by James in the conclusion of the book)
+![[Pasted image 20231006012541.png]]
+1. Outcome based: Concerned with changing the results
+    Losing weight, Publishing a book, etc..
+1. Process based: Concerned with changing the habits and the systems
+    Developing a new routine at the gym, <u>decluttering my desk before I start to work.</u>
+3. Identity based: Concerned with changing you beliefs
+    Your self-image, your judgments about yourself and others.</p>
+<blockquote>
+<p>Outcomes are about what you get, Processes are about what you do, identity is about what you believe.</p>
+</blockquote>
+<p>The problem is not that one level is better or worse than the another, all levels of change are useful in their own way. The problem is in the direction of change.</p>
+<p>Most people don't even consider identity change when they set out to improve. This is the typical approach people have: GOAL(losing weight) -&gt; PROCESS(sticking to a diet) -&gt; OUTCOME(lean body). 
+If I do this process then I'll lose weight. They have their goals in place and their plans to act to progress in that direction. But, but they never really don't change their beliefs that drive those actions-they don't change the way they look at themselves. 
+<u>They don't realise that their old identity can sabotage their new plans for change.</u></p>
+<p>Identity change is not a joke. This really is powerful. Believe what kind of a person you are. You'll naturally progress towards your goals.
+Once you start taking pride in who you are, you'll fight tooth and nail to maintain your habits. </p>
+<blockquote>
+<p>Unity of the chapter:
+True behaviour change is identity change. You might start a habit because of motivation, but the only reason we'll stuck with one is that it becomes part if our identity. Anyone can convince themselves to go the gym once or twice, but if we don't shift the belief behind the behaviour, then it is hard to stick with the long-term changes. <strong>Improvements are only temporary until they become part of who we are.</strong></p>
+</blockquote>
+<p>The goal is not to read a book, the goal is to become <strong>a reader.</strong>
+The goal is not to program everyday, the goal is to be an expert in <em>ml</em>
+Thee goal is not to go to gym everyday, the goal is to become a GYMRAT</p>
+<p>Doing the right thing is easy, despite the difficulties because our identity and behaviour are aligned.</p>
+<h4 id="the-other-edge-of-identity-change">The Other edge of Identity Change</h4>
+<p>What we believe is who we are, consciously or non-consciously. As with the benefits, identity change can be the primary cause that impedes our growth. 
+1. I'm horrible at math
+2. I can't stay awake after lunch
+3. My hair doesn't look good.
+4. I'll go later to go the gym today.
+Many other variations like these...</p>
+<p>The more deeply a thought or action is tied to your identity, the more difficult it is to change it.
+It can feel comfortable to believe what your culture believes(<em>group identity</em>), or to do what upholds your self-image.(<em>personal identity</em>). </p>
+<blockquote>
+<p>The biggest barrier to positive change at any level-individual,team,society-is identity conflict.</p>
+</blockquote>
+<p>On any given day, you may struggle with your habits because you're too busy or too tired or too overwhelmed or hundreds of other bull shit reasons. Over the long run, however the real reason is that our self-image gets in the way.</p>
+<p>Q. Beliefs, beliefs, beliefs. They are the core of identity formation. Behaviour change. If they are so crucial, where do we actually adapt these beliefs from?</p>
+<h4 id="two-step-process-to-changing-your-identity">Two-step process to changing your identity.</h4>
+<p>There exists no belief that exists without origin,  beliefs are basically our built-up experiences. We form a belief based on evidence we have for that certain thing.</p>
+<ol>
+<li><strong>Build evidence</strong> to show yourself what kind of a person you are. This creates strong beliefs. </li>
+<li>The <strong>frequency</strong> of which a certain habit is performed will influence our identity.</li>
+</ol>
+<p>BUILD evidence, do it FREQUENTLY; identity : repeated beingness(essentitas-being, identidem-repeatedly)</p>
+<p>New identities require new evidence. If we keep casting the same vote we've always cast, we're going to get the same results we've always got. If nothing changes, nothing will change.
+<strong>The two-step process to change identity:</strong>
+1. <strong>Decide the type of person you want to be.</strong>
+    First decide who you want to be. This holds at any level- as individual,team,society, nation. What do you stand for? What are your principals and values? Who do you wish to become?
+    Answering these from bottom-up is hard. It's easier to work top-bottom. Start with the type of results you want to achieve.And then work backwards.
+    Ex:
+    1. Who is the type of person that can get SIX-pack: The one who eats proper food and maintains calorie deficit.
+    2. Who is the type of person that is well-versed with DATA SCIENCE: The one who daily invests decent hours of his life to learning things in DS and writes code.
+    <em>Constantly keep asking yourself, do the people whom you aspire to become would perform this task in this way.</em>
+2. <strong>Prove it to yourself with small wins</strong>
+    Win at performing the habit. Everyday. </p>
+<p>Identity-based habits are the introduction to <strong>feedback loops.</strong> Your habits shape your identity, your identity shape your habits.
+Let your values, principles and identity drive the loop rather than your results. The focus should always be on becoming the type of person, not getting a particular goal or outcome. </p>
+<h4 id="chapter-epilogue">Chapter Epilogue</h4>
+<p>The true question is: Are you becoming the type of person you want to become? The first step is not how or what, but <strong>who</strong>.
+Habits can bring everything you want in life(fit body, career success). But, habits are not about <em>having</em> something. They are about <em>becoming</em> someone.</p>
+<p>2023-10-30</p>
+<h3 id="chapter-3-how-to-build-better-habits-in-4-simple-steps">Chapter-3: How to build Better Habits in 4 simple steps</h3>
+<p>In 1898, a psychologist named Edward Thorndike conducted an experiment on cats. Put them in a box-kept a lever at the end-when  the lever was pressed-at the opening there was food. </p>
+<blockquote>
+<p>Behaviours followed by satisfying consequences tend to be repeated and those that produce unpleasant consequences are less likely repeated.</p>
+<p>A habit is a behaviour that has been repeated enough times to become automatic</p>
+</blockquote>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigatoion.expand", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      
+    
+  </body>
+</html>

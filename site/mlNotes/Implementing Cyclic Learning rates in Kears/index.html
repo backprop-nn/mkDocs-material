@@ -1,0 +1,698 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.11">
+    
+    
+      
+        <title>Implementing Cyclic Learning Rates in Keras - backprop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#implementing-cyclic-learning-rates-in-keras" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="backprop" class="md-header__button md-logo" aria-label="backprop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            backprop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Implementing Cyclic Learning Rates in Keras
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../notes/notes_index/" class="md-tabs__link">
+        
+  
+    
+  
+  Notes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../mlNotes_index/" class="md-tabs__link">
+        
+  
+    
+  
+  ML-notes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="backprop" class="md-nav__button md-logo" aria-label="backprop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    backprop
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/notes_index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlNotes_index/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ML-notes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-little-brief-about-learning-rates-and-cyclic-learning-rates" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Little brief about Learning Rates and Cyclic Learning Rates:
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Little brief about Learning Rates and Cyclic Learning Rates:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-what-is-learning-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1 What is Learning Rate:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-leslies-hack" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2 Leslie's Hack
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-implementing-cylic-learning-rate-in-keras-on-mnist-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Implementing Cylic learning Rate in Keras on MNIST dataset
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Implementing Cylic learning Rate in Keras on MNIST dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-with-a-constant-learning-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1. With a Constant Learning Rate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1. With a Constant Learning Rate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#211-compiling-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1.1 Compiling the Model:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-fitting-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1.2 Fitting the model:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1.3 Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-with-cyclic-learning-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 With Cyclic Learning Rate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 With Cyclic Learning Rate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-compling-the-cyclic-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.1 Compling the Cyclic Model.
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-fitting-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.2 Fitting the model:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2.3 Results
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Conclusion:
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="implementing-cyclic-learning-rates-in-keras">Implementing Cyclic Learning Rates in Keras</h1>
+<p>This article assumes that the reader is familiar with the concepts of a Cyclic learnign rate and focuses on the Implementation in Keras.</p>
+<p><strong>This Notebook:</strong> </p>
+<p><strong>For theory:</strong></p>
+<ul>
+<li>Refer paper: <a href="https://arxiv.org/abs/1506.01186">Cyclical Learning Rates for Training Neural Networks by 
+Leslie N. Smith</a>.</li>
+<li>Kudos to <a href="https://github.com/bckenstler/CLR">bckenstler's CLR repo</a></li>
+</ul>
+<h2 id="1-little-brief-about-learning-rates-and-cyclic-learning-rates">1. Little brief about Learning Rates and Cyclic Learning Rates:</h2>
+<h3 id="11-what-is-learning-rate">1.1 What is Learning Rate:</h3>
+<p>The rate at which a Neural network adapts to the new patterns in the data. Yes, we want our model to identify all the patterns in the data. So setting the learning rate to a high value seems a sensible thing to do. Nope. </p>
+<p>There's a trade-off:</p>
+<ol>
+<li>Setting a very high learning rate will cause the model to adapt to the new patterns fast and forgets the old patterns which it has identified before. The model will only be successful on the recent patterns but not even on the old patterns .</li>
+<li>Setting a low learning rate causes the model to only be effective on the patterns it has already learnt and it won't adapt to the new patterns easily.</li>
+</ol>
+<p><code>Learning rate</code> is arguably the most important hyper-parameter while training a NN. So setting the right value for the Learning rate is important.</p>
+<h3 id="12-leslies-hack">1.2 Leslie's Hack</h3>
+<p>If the maximum value is too rapidly adapting and the minimum value is too slowly adapting, then why not use a learning rate that cycles between the min value and the max value. In this way, the NN can adapt the new patterns and keep track of the old patterns.</p>
+<h2 id="2-implementing-cylic-learning-rate-in-keras-on-mnist-dataset">2. Implementing Cylic learning Rate in Keras on MNIST dataset</h2>
+<p>Leslie putforths in his paper that using cyclic lerning rates and a big batch size will help the model converge faster and yield better results.</p>
+<p>So, these are the two metrics we are watching for: Speed and Accuracy.</p>
+<h3 id="21-with-a-constant-learning-rate">2.1. With a Constant Learning Rate</h3>
+<ul>
+<li>We've build a Neural Network with 3 dense layers, with each layer with neurons 100, 50, 10 respectively. </li>
+</ul>
+<h4 id="211-compiling-the-model">2.1.1 Compiling the Model:</h4>
+<ul>
+<li><strong>Activation Function:</strong> We use <code>softmax</code> as the activation function for each layer in the network</li>
+<li><strong>Loss:</strong> <code>categorical_crossentropy</code></li>
+<li><strong>Optimizers:</strong> <code>Adam</code> with <code>learning_rate = 0.1</code></li>
+<li><strong>metrics:</strong> <code>categorical_crossentropy_accuracy</code></li>
+</ul>
+<h4 id="212-fitting-the-model">2.1.2 Fitting the model:</h4>
+<ul>
+<li>Epochs = 15</li>
+<li>batch_size = 100</li>
+</ul>
+<h4 id="213-results">2.1.3 Results</h4>
+<ul>
+<li>Time taken for training the Network:  30.209205443000428s</li>
+<li>Validation Accuracy:0.7598</li>
+</ul>
+<p><img alt="Epoch v loss/Accuracy: With Constant LR" src="../resources/cf542169-637e-4572-8556-bd7f1c85f03b.png" /></p>
+<h3 id="22-with-cyclic-learning-rate">2.2 With Cyclic Learning Rate</h3>
+<ul>
+<li>We use the same architecture as before with three layers of neuros 100,50,10 respectively.</li>
+<li>We implement the Cyclic learning rate as a callback.</li>
+<li>clone the repo <a href="https://github.com/bckenstler/CLR">CLRrepo</a> in your current working directory where your notebook resides.</li>
+<li>Import callbacks abd clr_callback<ul>
+<li>from keras.callbacks import *</li>
+<li>from clr_callback import *</li>
+</ul>
+</li>
+</ul>
+<h4 id="221-compling-the-cyclic-model">2.2.1 Compling the Cyclic Model.</h4>
+<p>Same as in <a href="#211-compiling-the-model">Compiling the model</a></p>
+<h4 id="222-fitting-the-model">2.2.2 Fitting the model:</h4>
+<ul>
+<li>We initialize the CylcicLR instance with the <code>triangular</code> policy and set it to <code>clr_traingular</code> variable.</li>
+<li>We'll set this <code>clr_traingular</code> variable to callbacks as a list.</li>
+<li>Epochs = 15</li>
+<li><strong>batch_size = 2000</strong></li>
+</ul>
+<h4 id="223-results">2.2.3 Results</h4>
+<ul>
+<li>Time taken for training the neural net:  5.474767358999998 s</li>
+<li>Validation Accuracy: 0.8352</li>
+</ul>
+<p><img alt="Epoch v Accuracy: With Cyclic LR" src="../resources/1ee1d418-a39d-4070-b584-5d0ff028cf72.png" /></p>
+<p><img alt="Epoch v loss: With Cyclic LR" src="../resources/a38200e8-6c84-4f12-8748-ea3f548841d5.png" /></p>
+<h2 id="3-conclusion">3. Conclusion:</h2>
+<p>The results are self-explanatory that the model performed faster and better with Cyclic Learning rate with a bigger batch_size than with a Constant Learning Rate with a small batch_size.</p>
+<!-- step_size = 2000
+iterations = 10000
+The learning rate increases from 0.001 to 0.006 thorugh the iterations 0-2000 and then falls back from 0.006 to 0.001 throught the iteration range of 2000-4000. This happens through out the whole number of iterations
+
+ - total no.of instances = 60000
+ - epochs = 15
+ - batch_size = 100
+ - total no. of iterations per epoch = 600 * 100 = 60000
+ - total no.of iterations for the whole training = 60000*15 = 900000
+
+The accuracy and loss is calculated at the end of each epoch with a cyclic learning rate. -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigatoion.expand", "toc.follow"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      
+    
+  </body>
+</html>
